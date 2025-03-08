@@ -22,7 +22,7 @@ Winter Framework é uma estrutura leve e elegante para construção de APIs REST
 
 ```bash
 # Clone o repositório
-git clone https://github.com/durukar/winter-framework.git
+git clone https://github.com/durukar/WinterFramework.git
 
 # Entre na pasta do projeto
 cd winter-framework
