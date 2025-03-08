@@ -45,7 +45,6 @@ Crie sua primeira aplicação com Winter Framework em três passos simples:
 
 ```typescript
 // UserController.ts
-import { RestController, GetMapping, PostMapping, PathParam, RequestBody } from './path/to/winter-framework';
 
 @RestController('/users')
 export class UserController {
@@ -82,8 +81,6 @@ export class UserController {
 
 ```typescript
 // main.ts
-import { Winter } from './path/to/winter-framework';
-import { UserController } from './UserController';
 
 Winter.create()
   .setName('MeuApp')
@@ -320,7 +317,6 @@ Create your first application with Winter Framework in three simple steps:
 
 ```typescript
 // UserController.ts
-import { RestController, GetMapping, PostMapping, PathParam, RequestBody } from './path/to/winter-framework';
 
 @RestController('/users')
 export class UserController {
@@ -357,8 +353,6 @@ export class UserController {
 
 ```typescript
 // main.ts
-import { Winter } from './path/to/winter-framework';
-import { UserController } from './UserController';
 
 Winter.create()
   .setName('MyApp')
