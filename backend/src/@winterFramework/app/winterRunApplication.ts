@@ -90,7 +90,7 @@ export class WinterWelcome {
   @GetMapping()
   welcomeDev(c: Context) {
     return c.json({
-      dev: 'Desenvolvido e mantido por Lucas D.',
+      dev: 'Developed and maintained by Lucas D.',
       gitHub: 'https://github.com/durukar',
       stack: 'JS, HONOJS, TS',
     })

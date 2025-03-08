@@ -25,12 +25,12 @@ import {
 
 export function RestController(basePath: string = '') {
   return function (target: any) {
-    console.log(`Registrando controlador: ${target.name} em ${basePath}`)
+    console.log(`Registering controller: ${target.name} in ${basePath}`)
     if (!controllers.has(target)) {
       controllers.set(target, { basePath, routes: [] })
       controllersList.push(target)
       console.log(
-        `Lista de controladores agora tem ${controllersList.length} itens`,
+        `Controller list now has ${controllersList.length} items`,
       )
     } else {
       const metadata = controllers.get(target)!
@@ -222,14 +222,14 @@ export function Validate(schema: any) {
         const requiredFields = Object.keys(schema)
         for (const field of requiredFields) {
           if (body[field] === undefined) {
-            return ctx.json({ error: `Campo ${field} é obrigatório` }, 400)
+            return ctx.json({ error: `${field} field is mandatory` }, 400)
           }
         }
 
         ctx.set('validatedBody', body)
         return original.apply(this, [ctx])
       } catch (error) {
-        return ctx.json({ error: 'Erro de validação', details: error }, 400)
+        return ctx.json({ error: 'Validation error', details: error }, 400)
       }
     }
     return descriptor
