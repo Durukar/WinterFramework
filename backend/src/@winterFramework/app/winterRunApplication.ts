@@ -3,18 +3,15 @@
 // TODO: documentar o codigo no docussauros
 import { Hono, type Context } from 'hono'
 import { serve } from '@hono/node-server'
-import {
-  GetMapping,
-  registerControllers,
-  RestController,
-} from '../decorator/decorators'
+import { registerControllers } from './register-controllers.app'
+import { GetMapping, RestController } from '../decorator/winter.decorators'
+import { DebuggerLogger } from '../decorator/debugger-logger.decorator'
 
 const envConfigs = {
   dev: { port: 1337 },
   prod: { port: 8080 },
 }
 
-// Classe principal do Winter
 export class Winter {
   private app: Hono
   private name: string = 'WinterApp'
@@ -27,7 +24,7 @@ export class Winter {
     this.app = new Hono()
   }
 
-  // Métodos fluentes para configuração
+  // Fluent methods for configuration
   public setName(name: string): Winter {
     this.name = name
     return this
@@ -88,6 +85,7 @@ export class Winter {
 @RestController('/')
 export class WinterWelcome {
   @GetMapping()
+  @DebuggerLogger()
   welcomeDev(c: Context) {
     return c.json({
       dev: 'Developed and maintained by Lucas D.',
