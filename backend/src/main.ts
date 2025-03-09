@@ -1,10 +1,25 @@
-import { Winter, WinterWelcome } from './@winterFramework'
+import type { Context } from 'hono'
+import { Winter, WinterWelcome } from './@winterFramework/app/winter.app'
+import { GetMapping } from './@winterFramework/decorator/http-method.decorator'
+import { RestController } from './@winterFramework/decorator/rest-controller.decorator'
+import { DebuggerLogger } from './@winterFramework/decorator/debugger-logger.decorator'
+
+@RestController('/test')
+class Test {
+  @GetMapping()
+  @DebuggerLogger()
+  testando(c: Context) {
+    return c.json({
+      message: 'Deu bom',
+    })
+  }
+}
 
 Winter.create()
-  .setName('WinterFramework') // Nome do projeto
+  .setName('WinterFramework') // Project Name
   .setEnv('dev') // dev = 1337 | prod = 8080
-  // .setPort(3000) // Porta customizada,
-  .addController(WinterWelcome) // Controladores | Retire o WinterWelcome caso necessario
+  // .setPort(3000) // Custom Port,
+  .addController(WinterWelcome, Test) // Controllers | Exclude WinterWelcome controller in prod
   .addMiddleware((app) => {
     // Middlewares
     app.use('*', async (ctx, next) => {
