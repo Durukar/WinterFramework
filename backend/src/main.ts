@@ -4,17 +4,6 @@ import { GetMapping } from './@winterFramework/decorator/http-method.decorator'
 import { RestController } from './@winterFramework/decorator/rest-controller.decorator'
 import { DebuggerLogger } from './@winterFramework/decorator/debugger-logger.decorator'
 
-@RestController('/test')
-class Test {
-  @GetMapping()
-  @DebuggerLogger()
-  testando(c: Context) {
-    return c.json({
-      message: 'Deu bom',
-    })
-  }
-}
-
 Winter.create()
   .setName('WinterFramework') // Project Name
   .setEnv('dev') // dev = 1337 | prod = 8080
