@@ -3,11 +3,12 @@ import { dbConfig } from '@/config/config'
 import { initializePostgres } from './dialects/postgres'
 import { initializeMySQL } from './dialects/mysql'
 import { initializeSQLite } from './dialects/sqlite'
+import type { DrizzleDB } from 'types/orm.type'
 
-let db: any = null
+let db: DrizzleDB | null = null
 let initialized = false
 
-export async function initializeDatabase() {
+export async function initializeDatabase(): Promise<DrizzleDB> {
   if (initialized && db) return db
 
   switch (dbConfig.dialect) {
@@ -31,7 +32,7 @@ export async function initializeDatabase() {
   return db
 }
 
-export async function getDb() {
+export async function getDb(): Promise<DrizzleDB> {
   return db || initializeDatabase()
 }
 
