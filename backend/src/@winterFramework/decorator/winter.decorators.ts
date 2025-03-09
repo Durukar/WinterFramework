@@ -1,6 +1,5 @@
 /*
-  Aqui é um barril contendo todos os decorators do WinterFramework.
-  NÃO IMPORTE 
+  Here is a barrel containing all the decorators from the WinterFramework.
 */
 
 export * from './rest-controller.decorator'
