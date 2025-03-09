@@ -1,8 +1,4 @@
-import type { Context } from 'hono'
 import { Winter, WinterWelcome } from './@winterFramework/app/winter.app'
-import { GetMapping } from './@winterFramework/decorator/http-method.decorator'
-import { RestController } from './@winterFramework/decorator/rest-controller.decorator'
-import { DebuggerLogger } from './@winterFramework/decorator/debugger-logger.decorator'
 
 Winter.create()
   .setName('WinterFramework') // Project Name

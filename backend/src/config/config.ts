@@ -89,9 +89,7 @@ export function mapToOrmDialect(kitDialect: Config['dialect']): Dialect {
   const ormDialect = mapping[kitDialect]
 
   if (!ormDialect) {
-    throw new Error(
-      `Unsupported drizzle-kit dialect for ORM: ${kitDialect}`,
-    )
+    throw new Error(`Unsupported drizzle-kit dialect for ORM: ${kitDialect}`)
   }
 
   return ormDialect
