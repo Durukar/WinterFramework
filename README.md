@@ -25,16 +25,10 @@ Winter Framework é uma estrutura leve e elegante para construção de APIs REST
 git clone https://github.com/durukar/WinterFramework.git
 
 # Entre na pasta do projeto
-cd winter-framework
+cd WinterFramework/backend
 
 # Instale as dependências
-npm install
-
-# ou usando yarn
-yarn install
-
-# ou usando pnpm
-pnpm install
+bun install
 ```
 
 ### Início Rápido
@@ -294,19 +288,13 @@ Winter Framework is a lightweight and elegant structure for building REST APIs i
 
 ```bash
 # Clone the repository
-git clone https://github.com/durukar/winter-framework.git
+git clone https://github.com/durukar/WinterFramework.git
 
 # Enter the project folder
-cd winter-framework
+cd WinterFramework/backend
 
 # Install dependencies
-npm install
-
-# or using yarn
-yarn install
-
-# or using pnpm
-pnpm install
+bun i or bun install
 ```
 
 ### Quick Start
