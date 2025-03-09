@@ -25,7 +25,7 @@ Bem-vindo ao WinterFramework Agradecemos seu interesse em contribuir. Este guia 
 
 ## Diretrizes de Código
 
-- Siga o estilo de código [ex.: PEP 8 para Python].
+- Siga o estilo de código ja existente.
 - Documente seu código quando aplicável em logicas complexas.
 
 ## Reportando Bugs
