@@ -6,14 +6,21 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
+    "@libsql/client": "^0.14.0",
     "dotenv": "^16.4.7",
-    "hono": "^4.7.2"
+    "drizzle-orm": "^0.40.0",
+    "hono": "^4.7.2",
+    "mysql2": "^3.13.0",
+    "pg": "^8.13.3"
   },
   "devDependencies": {
     "@rocketseat/eslint-config": "^2.2.2",
     "@types/better-sqlite3": "^7.6.12",
     "@types/bun": "latest",
+    "@types/eslint__js": "^8.42.3",
     "@types/node": "^20.11.17",
+    "@types/pg": "^8.11.11",
+    "drizzle-kit": "^0.30.5",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.1.0",
@@ -25,7 +32,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-simple-import-sort": "^12.0.0",
-    "prettier": "^3.4.2",
+    "prettier": "^3.5.3",
     "tsx": "^4.19.3"
   },
   "module": "index.ts",
