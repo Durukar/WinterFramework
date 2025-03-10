@@ -93,7 +93,7 @@ Winter.create()
 
 ```bash
 # Transpile e execute
-npx tsc && node dist/main.js
+bun start
 ```
 
 Sua API estará rodando em http://localhost:1337
@@ -359,7 +359,7 @@ Winter.create()
 
 ```bash
 # Transpile and run
-npx tsc && node dist/main.js
+bun start
 ```
 
 Your API will be running at http://localhost:1337
