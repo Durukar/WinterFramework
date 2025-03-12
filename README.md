@@ -262,7 +262,7 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull r
 
 ### Licença
 
-[MIT](LICENSE)
+[APACHE](LICENSE)
 
 ### Autor
 
@@ -528,7 +528,7 @@ Contributions are welcome! Feel free to open issues or pull requests.
 
 ### License
 
-[MIT](LICENSE)
+[APACHE](LICENSE)
 
 ### Author
 
