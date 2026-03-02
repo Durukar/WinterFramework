@@ -4,8 +4,6 @@
 
 **A lightweight, elegant REST API framework for TypeScript — inspired by Spring Boot, powered by [Hono](https://hono.dev/).**
 
-<img src=".github/assets/terminal_demo.webp" width="700" alt="Winter Framework terminal demonstration">
-
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Hono](https://img.shields.io/badge/Hono-4.12+-E36002?logo=hono&logoColor=white)](https://hono.dev/)
