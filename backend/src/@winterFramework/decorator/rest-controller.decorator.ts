@@ -21,7 +21,7 @@ import type { ConstructorFunction } from '../registry/controller.registry'
  * ```
  */
 export function RestController(basePath: string = '') {
-  return function (target: ConstructorFunction) {
+  return function <T extends ConstructorFunction>(target: T): T {
     console.log(`Registering controller: ${target.name} in ${basePath}`)
     if (!controllers.has(target)) {
       controllers.set(target, { basePath, routes: [] })

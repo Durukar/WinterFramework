@@ -24,6 +24,9 @@ O Winter Framework traz a **arquitetura familiar de decorators do Spring Boot** 
 - 🛠️ **API Fluente** — Configuração encadeada para um setup limpo
 - 🔄 **Injeção de Parâmetros** — `@PathParam`, `@QueryParam`, `@RequestBody`
 - 🛡️ **Validação Integrada** — Validação de corpo da requisição baseada em schema
+- 💉 **Injeção de Dependências** — Container IoC com `@Injectable` e `@Autowired`
+- 🛑 **Tratamento de Exceções** — `@ControllerAdvice` + `@ExceptionHandler` como Spring
+- 🔀 **Interceptors** — Ciclo `preHandle` / `postHandle` com `@UseInterceptor`
 - 🗄️ **Multi-Banco** — Drizzle ORM com suporte a PostgreSQL, MySQL e SQLite
 - 🧠 **Type Safe** — TypeScript completo com modo strict
 
@@ -32,9 +35,12 @@ O Winter Framework traz a **arquitetura familiar de decorators do Spring Boot** 
 - [Início Rápido](#início-rápido)
 - [Arquitetura](#arquitetura)
 - [API de Decorators](#api-de-decorators)
+- [Injeção de Dependências](#injeção-de-dependências)
 - [Configuração](#configuração)
 - [Middlewares](#middlewares)
 - [Validação](#validação)
+- [Tratamento de Exceções](#tratamento-de-exceções)
+- [Interceptors](#interceptors)
 - [Suporte a Banco de Dados](#suporte-a-banco-de-dados)
 - [Exemplos](#exemplos)
 - [Roadmap](#roadmap)
@@ -170,6 +176,26 @@ backend/src/
 | `@QueryParam(name)` | Injeta um parâmetro de query string |
 | `@RequestBody()` | Injeta o corpo da requisição JSON parseado |
 
+### Injeção de Dependências
+
+| Decorator | Descrição |
+|-----------|-----------|
+| `@Injectable(scope?)` | Registra uma classe no container DI (`singleton` ou `transient`) |
+| `@Autowired(token)` | Injeta uma dependência em uma propriedade da classe |
+
+### Tratamento de Exceções
+
+| Decorator | Descrição |
+|-----------|-----------|
+| `@ControllerAdvice()` | Registra uma classe como handler global de exceções |
+| `@ExceptionHandler(ExceptionClass)` | Mapeia um método para tratar um tipo específico de exceção |
+
+### Interceptors
+
+| Decorator | Descrição |
+|-----------|-----------|
+| `@UseInterceptor(InterceptorClass)` | Aplica um interceptor a uma classe ou método |
+
 ### Utilitários
 
 | Decorator | Descrição |
@@ -179,17 +205,62 @@ backend/src/
 | `@ServiceRepo()` | Injeta uma conexão Drizzle ORM |
 | `@DebuggerLogger(options?)` | Log de detalhes de execução (**apenas dev**) |
 
+## Injeção de Dependências
+
+O Winter provê um container IoC inspirado no ApplicationContext do Spring:
+
+```typescript
+@Injectable()
+export class UserRepository {
+  findAll() {
+    return [{ id: 1, name: 'Lucas' }];
+  }
+}
+
+@Injectable()
+export class UserService {
+  @Autowired(UserRepository)
+  private repo!: UserRepository;
+
+  findAll() {
+    return this.repo.findAll();
+  }
+}
+
+@RestController('/users')
+export class UserController {
+  @Autowired(UserService)
+  private service!: UserService;
+
+  @GetMapping()
+  findAll(c) {
+    return c.json(this.service.findAll());
+  }
+}
+```
+
+Registre providers no builder:
+
+```typescript
+Winter.create()
+  .addProvider(UserRepository, UserService)
+  .addController(UserController)
+  .start();
+```
+
 ## Configuração
 
 ```typescript
 Winter.create()
-  .setName('API')              // Nome da aplicação
-  .setEnv('prod')              // Ambiente: 'dev' (1337) | 'prod' (8080)
-  .setPort(3000)               // Sobrescreve a porta padrão
-  .addController(Controller1)  // Registra controladores
-  .addController(Controller2, Controller3)
-  .addMiddleware(myMiddleware) // Middlewares globais
-  .start();                    // Inicia o servidor
+  .setName('API')                         // Nome da aplicação
+  .setEnv('prod')                         // Ambiente: 'dev' (1337) | 'prod' (8080)
+  .setPort(3000)                          // Sobrescreve a porta padrão
+  .addProvider(MyService)                 // Registra providers DI
+  .addController(Controller1, Controller2) // Registra controladores
+  .addControllerAdvice(GlobalHandler)     // Handlers de exceção
+  .addInterceptor(AuthInterceptor)        // Interceptors globais
+  .addMiddleware(myMiddleware)            // Middlewares globais
+  .start();                               // Inicia o servidor
 ```
 
 ## Middlewares
@@ -242,6 +313,65 @@ export class ProductController {
   }
 }
 ```
+
+## Tratamento de Exceções
+
+Tratamento centralizado de erros inspirado no `@ControllerAdvice` do Spring:
+
+```typescript
+import { HttpException, NotFoundException, BadRequestException } from './@winterFramework/exceptions/http-exception'
+
+@ControllerAdvice()
+export class GlobalExceptionHandler {
+  @ExceptionHandler(NotFoundException)
+  handleNotFound(err, c) {
+    return c.json({ error: err.message }, 404);
+  }
+
+  @ExceptionHandler(BadRequestException)
+  handleBadRequest(err, c) {
+    return c.json({ error: err.message, status: 400 }, 400);
+  }
+
+  @ExceptionHandler(HttpException)
+  handleGeneric(err, c) {
+    return c.json({ error: err.message }, err.status);
+  }
+}
+```
+
+Classes de exceção integradas: `BadRequestException` (400), `UnauthorizedException` (401), `ForbiddenException` (403), `NotFoundException` (404), `ConflictException` (409), `InternalServerErrorException` (500).
+
+## Interceptors
+
+Processamento pré/pós requisição inspirado no `HandlerInterceptor` do Spring:
+
+```typescript
+@Injectable()
+export class AuthInterceptor implements HandlerInterceptor {
+  preHandle(ctx) {
+    const token = ctx.req.header('Authorization');
+    if (!token) throw new UnauthorizedException();
+    return true; // prosseguir para o handler
+  }
+
+  postHandle(ctx, result) {
+    console.log(`Resposta enviada para ${ctx.req.url}`);
+  }
+}
+
+// Aplicar a um controlador inteiro
+@UseInterceptor(AuthInterceptor)
+@RestController('/admin')
+export class AdminController { ... }
+
+// Ou a um método específico
+@GetMapping('/metrics')
+@UseInterceptor(LoggingInterceptor)
+getMetrics(c) { ... }
+```
+
+Interceptors executam na ordem: **global → classe → método**.
 
 ## Suporte a Banco de Dados
 
@@ -314,7 +444,9 @@ export class BookController {
 
 ## Roadmap
 
-- [ ] Container de injeção de dependências
+- [x] Container de injeção de dependências (`@Injectable`, `@Autowired`)
+- [x] Tratamento de exceções (`@ControllerAdvice`, `@ExceptionHandler`)
+- [x] Interceptors de requisição (`HandlerInterceptor`, `@UseInterceptor`)
 - [ ] Geração automática de OpenAPI / Swagger
 - [ ] Suporte a WebSocket
 - [ ] CLI para scaffolding de projetos

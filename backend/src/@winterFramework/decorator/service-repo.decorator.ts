@@ -30,7 +30,8 @@ export interface DatabaseService {
  * ```
  */
 export function ServiceRepo() {
-  return function <T extends new (...args: unknown[]) => object>(constructor: T) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function <T extends new (...args: any[]) => object>(constructor: T) {
     return class extends constructor implements DatabaseService {
       private _dbInstance?: DrizzleDB
 

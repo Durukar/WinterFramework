@@ -1,7 +1,8 @@
 /**
  * Type representing a constructor function (class) that can be instantiated with `new`.
  */
-export type ConstructorFunction = new (...args: unknown[]) => object
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ConstructorFunction = new (...args: any[]) => object
 
 /**
  * Supported HTTP methods that can be registered with Hono.
