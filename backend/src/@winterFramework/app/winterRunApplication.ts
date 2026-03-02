@@ -5,6 +5,8 @@ import { registerControllers } from './register-controllers.app'
 import { GetMapping, RestController } from '../decorator/winter.decorators'
 import { DebuggerLogger } from '../decorator/debugger-logger.decorator'
 import type { ConstructorFunction } from '../registry/controller.registry'
+import { WinterContainer } from '../container/winter-container'
+import { globalInterceptors } from '../registry/interceptor.registry'
 
 /** Default port configuration per environment. */
 const envConfigs = {
@@ -21,7 +23,10 @@ const envConfigs = {
  * Winter.create()
  *   .setName('MyAPI')
  *   .setEnv('dev')
+ *   .addProvider(UserService, UserRepository)
  *   .addController(UserController)
+ *   .addControllerAdvice(GlobalExceptionHandler)
+ *   .addInterceptor(LoggingInterceptor)
  *   .start();
  * ```
  */
@@ -32,6 +37,7 @@ export class Winter {
   private port?: number
   private controllers: ConstructorFunction[] = []
   private middlewares: Array<(app: Hono) => void> = []
+  private advices: ConstructorFunction[] = []
 
   constructor() {
     this.app = new Hono()
@@ -75,6 +81,36 @@ export class Winter {
   }
 
   /**
+   * Registers one or more injectable providers (services, repositories) in the DI container.
+   * Equivalent to Spring's `@ComponentScan` registration.
+   * @param providers - Provider constructor functions decorated with {@link Injectable}.
+   */
+  public addProvider(...providers: ConstructorFunction[]): Winter {
+    const container = WinterContainer.getInstance()
+    providers.forEach((provider) => container.register(provider))
+    return this
+  }
+
+  /**
+   * Registers one or more `@ControllerAdvice` classes for global exception handling.
+   * @param advices - ControllerAdvice constructor functions.
+   */
+  public addControllerAdvice(...advices: ConstructorFunction[]): Winter {
+    this.advices.push(...advices)
+    return this
+  }
+
+  /**
+   * Registers a global interceptor that runs before/after every controller method.
+   * Equivalent to Spring's `WebMvcConfigurer.addInterceptors()`.
+   * @param interceptor - Interceptor constructor function implementing {@link HandlerInterceptor}.
+   */
+  public addInterceptor(interceptor: ConstructorFunction): Winter {
+    globalInterceptors.push(interceptor)
+    return this
+  }
+
+  /**
    * Registers a global middleware function that receives the Hono app instance.
    * @param middleware - A function that applies middleware to the Hono app (e.g. `app.use('*', ...)`)).
    */
@@ -95,6 +131,9 @@ export class Winter {
    */
   public start(): void {
     this.middlewares.forEach((middleware) => middleware(this.app))
+
+    // Instantiate @ControllerAdvice classes (triggers registration)
+    this.advices.forEach((advice) => new advice())
 
     registerControllers(this.app, this.controllers)
 
