@@ -111,6 +111,20 @@ export class WinterContainer {
     }
 
     /**
+     * Overrides a registered provider with a custom instance (useful for mocking in tests).
+     * @param token - The constructor function to override.
+     * @param mockInstance - The instance to use instead of creating a new one.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public overrideProvider(token: ConstructorFunction, mockInstance: any): void {
+        this.providers.set(token, {
+            constructor: token,
+            scope: 'singleton',
+            instance: mockInstance as object
+        })
+    }
+
+    /**
      * Checks if a token is registered in the container.
      * @param token - The constructor function to check.
      */
