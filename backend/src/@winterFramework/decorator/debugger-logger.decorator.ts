@@ -1,8 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
-  I created this Debug controller to assist me in the development process.
-
-  DO NOT USE IN PRODUCTION!!!!!!
+ * Method decorator that wraps a controller method with debugging output.
+ * Logs method execution, parameters, response details, and timing information to the console.
+ *
+ * **⚠️ DO NOT USE IN PRODUCTION** — this decorator is intended for development only.
+ *
+ * @param options - Configuration for what to log.
+ * @param options.showParams - Log method arguments (default: `true`).
+ * @param options.showReturn - Log the return value / HTTP response (default: `true`).
+ * @param options.showTime - Log execution time in ms (default: `true`).
+ * @returns A method decorator function.
+ *
+ * @example
+ * ```ts
+ * @GetMapping()
+ * @DebuggerLogger({ showTime: true, showParams: false })
+ * findAll(c: Context) {
+ *   return c.json([]);
+ * }
+ * ```
  */
 export function DebuggerLogger(
   options: {
@@ -10,19 +25,19 @@ export function DebuggerLogger(
     showReturn?: boolean
     showTime?: boolean
   } = {
-    showParams: true,
-    showReturn: true,
-    showTime: true,
-  },
+      showParams: true,
+      showReturn: true,
+      showTime: true,
+    },
 ) {
   return function (
-    target: any,
+    _target: object,
     propertyKey: string,
     descriptor: PropertyDescriptor,
   ) {
     const originalMethod = descriptor.value
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (this: { constructor: { name: string } }, ...args: unknown[]) {
       const controllerName = this.constructor.name
       const methodName = propertyKey
 
@@ -30,7 +45,12 @@ export function DebuggerLogger(
 
       if (options.showParams && args.length > 0) {
         const filteredArgs = args.map((arg) => {
-          if (arg && arg.req && arg.res) {
+          if (
+            arg &&
+            typeof arg === 'object' &&
+            'req' in arg &&
+            'res' in arg
+          ) {
             return '[Context Object]'
           }
           return arg
@@ -43,7 +63,7 @@ export function DebuggerLogger(
       }
 
       const startTime = performance.now()
-      let result
+      let result: Response | unknown
 
       try {
         result = await originalMethod.apply(this, args)
@@ -55,12 +75,7 @@ export function DebuggerLogger(
         }
 
         if (options.showReturn) {
-          if (
-            result &&
-            typeof result === 'object' &&
-            'headers' in result &&
-            'body' in result
-          ) {
+          if (result instanceof Response) {
             const contentType = result.headers.get('content-type') || ''
             console.log(
               `[DEBUG] 📤 Response status: ${result.status} ${result.statusText}`,
@@ -70,11 +85,12 @@ export function DebuggerLogger(
             if (contentType.includes('application/json')) {
               try {
                 const clonedResponse = result.clone()
-                const jsonData = await clonedResponse.json()
+                const jsonData: unknown = await clonedResponse.json()
                 console.log(`[DEBUG] 📤 Response body:`, jsonData)
               } catch (err) {
+                const message = err instanceof Error ? err.message : String(err)
                 console.log(
-                  `[DEBUG] 📤 Could not parse JSON response: ${err.message}`,
+                  `[DEBUG] 📤 Could not parse JSON response: ${message}`,
                 )
               }
             } else {
