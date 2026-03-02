@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Dependency Injection (DI) Container with `@Injectable()` and `@Autowired()` decorators
+- Global Exception Handling with `@ControllerAdvice()` and `@ExceptionHandler()` decorators
+- Request Pipeline Interceptors with `HandlerInterceptor` interface and `@UseInterceptor()` decorator
+- Core HTTP Exceptions hierarchy (`NotFoundException`, `BadRequestException`, etc.)
 - JSDoc documentation for all framework core files and decorators
 - `CHANGELOG.md` following Keep a Changelog format
 - Improved contribution guides (EN/PT-BR) with PR templates, commit conventions, and Code of Conduct
