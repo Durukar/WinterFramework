@@ -42,6 +42,7 @@ Winter Framework brings **Spring Boot's familiar decorator-based architecture** 
 - [Exception Handling](#exception-handling)
 - [Interceptors](#interceptors)
 - [Database Support](#database-support)
+- [Testing Utilities](#testing-utilities)
 - [Examples](#examples)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
@@ -442,16 +443,55 @@ export class BookController {
 }
 ```
 
+## Testing Utilities
+
+Winter Framework includes a robust, class-based testing architecture inspired by Spring Boot. It uses `bun:test` under the hood and allows you to test your application without binding to a real HTTP port.
+
+### `@WinterTest` & `@MockBean`
+
+Use `@WinterTest` to bootstrap the application context in memory and `@MockBean` to automatically replace real dependencies with mocks.
+
+```typescript
+import { expect } from 'bun:test'
+import { WinterTest, MockBean, Test, WinterTestClient } from '@winterFramework/testing'
+
+@WinterTest({
+  controllers: [UserController],
+  providers: [UserService]
+})
+export class UserControllerTest {
+  
+  @MockBean(UserService)
+  private mockUserService!: UserService
+
+  @Autowired(WinterTestClient)
+  private client!: WinterTestClient
+
+  @Test('Should return mocked data')
+  async testFindAllUsers() {
+    this.mockUserService.findAll = () => [
+      { id: 999, name: 'System Mocked User', email: 'mock@system.com' }
+    ]
+
+    const res = await this.client.get('/users')
+    expect(res.status).toBe(200)
+
+    const body = await res.json()
+    expect(body.length).toBe(1)
+  }
+}
+```
+
 ## Roadmap
 
 - [x] Dependency injection container (`@Injectable`, `@Autowired`)
 - [x] Exception handling (`@ControllerAdvice`, `@ExceptionHandler`)
 - [x] Request interceptors (`HandlerInterceptor`, `@UseInterceptor`)
+- [x] Built-in testing utilities (`@WinterTest`, `@MockBean`)
 - [ ] OpenAPI / Swagger auto-generation
 - [ ] WebSocket support
 - [ ] CLI tool for project scaffolding
 - [ ] Plugin system for extensibility
-- [ ] Built-in testing utilities
 
 ## Contributing
 

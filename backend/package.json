@@ -2,7 +2,8 @@
   "name": "winterframework",
   "type": "module",
   "scripts": {
-    "start": "tsx watch src/main.ts"
+    "start": "tsx watch src/main.ts",
+    "test": "bun test src/tests"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",

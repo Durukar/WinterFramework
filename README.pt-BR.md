@@ -42,6 +42,7 @@ O Winter Framework traz a **arquitetura familiar de decorators do Spring Boot** 
 - [Tratamento de Exceções](#tratamento-de-exceções)
 - [Interceptors](#interceptors)
 - [Suporte a Banco de Dados](#suporte-a-banco-de-dados)
+- [Utilitários de Teste](#utilitários-de-teste)
 - [Exemplos](#exemplos)
 - [Roadmap](#roadmap)
 - [Contribuindo](#contribuindo)
@@ -442,16 +443,55 @@ export class BookController {
 }
 ```
 
+## Utilitários de Teste
+
+O Winter Framework inclui uma arquitetura de testes robusta baseada em classes, inspirada no Spring Boot. Ela utiliza o `bun:test` por baixo dos panos e permite testar sua aplicação em memória, sem a necessidade de abrir portas HTTP reais.
+
+### `@WinterTest` & `@MockBean`
+
+Utilize o `@WinterTest` para inicializar o contexto da aplicação em memória para os testes e `@MockBean` para substituir automaticamente injeções de dependências reais por Mocks programáveis.
+
+```typescript
+import { expect } from 'bun:test'
+import { WinterTest, MockBean, Test, WinterTestClient } from '@winterFramework/testing'
+
+@WinterTest({
+  controllers: [UserController],
+  providers: [UserService]
+})
+export class UserControllerTest {
+  
+  @MockBean(UserService)
+  private mockUserService!: UserService
+
+  @Autowired(WinterTestClient)
+  private client!: WinterTestClient
+
+  @Test('Deve retornar os dados mockados')
+  async testFindAllUsers() {
+    this.mockUserService.findAll = () => [
+      { id: 999, name: 'System Mocked User', email: 'mock@system.com' }
+    ]
+
+    const res = await this.client.get('/users')
+    expect(res.status).toBe(200)
+
+    const body = await res.json()
+    expect(body.length).toBe(1)
+  }
+}
+```
+
 ## Roadmap
 
 - [x] Container de injeção de dependências (`@Injectable`, `@Autowired`)
 - [x] Tratamento de exceções (`@ControllerAdvice`, `@ExceptionHandler`)
 - [x] Interceptors de requisição (`HandlerInterceptor`, `@UseInterceptor`)
+- [x] Utilitários de teste integrados (`@WinterTest`, `@MockBean`)
 - [ ] Geração automática de OpenAPI / Swagger
 - [ ] Suporte a WebSocket
 - [ ] CLI para scaffolding de projetos
 - [ ] Sistema de plugins para extensibilidade
-- [ ] Utilitários de teste integrados
 
 ## Contribuindo
 
